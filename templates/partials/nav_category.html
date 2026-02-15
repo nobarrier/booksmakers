@@ -1,0 +1,9 @@
+<ul class="category-menu">
+  {% for c in categories %}
+    <li>
+      <a href="{% url 'products:category' c.slug %}">
+        {{ c.name }}
+      </a>
+    </li>
+  {% endfor %}
+</ul>

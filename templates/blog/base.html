@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}ICBANQ Clone{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+
+<body>
+  {% include "partials/header.html" %}
+
+<div class="layout-wrapper">
+  <div class="layout">
+    <aside class="sidebar">
+      {% include "partials/nav_category.html" %}
+    </aside>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+
+  {% include "partials/footer.html" %}
+</body>
+</html>

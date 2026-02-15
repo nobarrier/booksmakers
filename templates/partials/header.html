@@ -1,0 +1,46 @@
+{% load static %}
+
+<header class="header">
+
+  <!-- 1. 상단바 -->
+  <div class="topbar">
+    <div class="container">
+      <div class="left">고객센터</div>
+      <div class="right">
+        로그인 회원가입 마이페이지 장바구니
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 로고 + 검색 + 장바구니 -->
+  <div class="header-main">
+    <div class="container">
+
+      <div class="logo">
+        <img src="{% static 'img/booksmakers_logo03.png' %}" alt="logo">
+      </div>
+
+      <div class="search">
+        <input type="text" placeholder="부품 · 키트 · 교육 검색">
+        <button>검색</button>
+      </div>
+
+      <div class="cart">
+        🛒 장바구니 (0)
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. 카테고리 바 -->
+  <div class="category-bar">
+    <div class="container">
+      <button>☰ 전체 카테고리</button>
+      <span>아두이노</span>
+      <span>라즈베리파이</span>
+      <span>전자부품</span>
+      <span>교육키트</span>
+    </div>
+  </div>
+
+</header>
