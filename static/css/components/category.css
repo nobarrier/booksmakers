@@ -1,0 +1,80 @@
+/*Top 카테고리바 */
+.category-bar {
+    background: #3e6f83;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.category-bar .container {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    height: 48px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 0 20px;
+}
+
+.category-bar .container::-webkit-scrollbar {
+    display: none;
+}
+
+.category-bar a.active {
+    border-bottom: 3px solid #ffd54f;
+    font-weight: 700;
+}
+
+
+.category-bar a {
+    text-decoration: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.2s ease;
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.category-bar a:hover {
+    color: #ffd54f; /* 노란 hover */
+}
+
+.category-all {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+
+/* 사이드 카테고리리바*/
+.category-menu {
+    background: #2e4d8a;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.category-menu h3 {
+    margin-bottom: 15px;
+}
+
+.category-item {
+    margin-bottom: 12px;
+}
+
+.category-item a {
+    color: white;
+    display: block;
+    padding: 6px 0;
+}
+
+.subcategory {
+    margin-left: 12px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.subcategory a {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+

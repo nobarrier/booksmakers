@@ -1,0 +1,49 @@
+.header {
+    background: #2e627a;
+    color: white;
+}
+
+.topbar {
+    padding: 12px 0;
+    font-size: 12px;
+    background: #2e627a;
+    color: #ffffff; /* ← 추가 */
+}
+
+.topbar a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.topbar .container {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topbar a:hover {
+    opacity: 0.8;
+}
+
+.header .container,
+.header-main .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.topbar .right {
+    display: flex;
+    gap: 20px; /* ← 링크 사이 간격 */
+    align-items: center;
+}
+
+.topbar .right a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.topbar .right a:hover {
+    opacity: 0.8;
+}

@@ -1,9 +1,23 @@
-<ul class="category-menu">
-  {% for c in categories %}
-    <li>
-      <a href="{% url 'products:category' c.slug %}">
-        {{ c.name }}
-      </a>
-    </li>
-  {% endfor %}
-</ul>
+<div class="category-menu">
+    <h3>☰ 전체 카테고리</h3>
+
+    {% for cat in categories %}
+        <div class="category-item">
+            <a href="{% url 'catalog:category' cat.slug %}"
+               class="{% if category and category.slug == cat.slug %}active{% endif %}">
+                {{ cat.name }}
+            </a>
+
+            {% if cat.children.all %}
+                <div class="subcategory">
+                    {% for child in cat.children.all %}
+                        <a href="{% url 'catalog:category' child.slug %}"
+                           class="{% if category and category.slug == child.slug %}active{% endif %}">
+                            └ {{ child.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

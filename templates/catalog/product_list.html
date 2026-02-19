@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
+
+{% block content %}
+    <section class="mall-hero">
+        <h1>{% if category %}{{ category.name }}{% else %}Electronics Store{% endif %}</h1>
+        <p>Browse active products with fast category navigation.</p>
+    </section>
+
+    <div class="mall-grid">
+
+        {% for product in products %}
+            {% if category %}
+                <h1>{{ category.name }}</h1>
+            {% else %}
+                <h1>전체 상품</h1>
+            {% endif %}
+
+            <article class="mall-card">
+                <a class="mall-card__link" href="{% url 'catalog:detail' product.pk %}">
+                    <div class="mall-card__thumb">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="mall-card__placeholder">NO IMAGE</div>
+                        {% endif %}
+                    </div>
+                    <div class="mall-card__body">
+                        <p class="mall-card__category">{{ product.category.name }}</p>
+                        <h3 class="mall-card__title">{{ product.name }}</h3>
+                        <p class="mall-card__price">{{ product.price }} KRW</p>
+                    </div>
+                    <div class="mall-card__thumb">
+                        {% if product.thumbnail %}
+                            <img src="{{ product.thumbnail }}" alt="{{ product.name }}">
+                        {% else %}
+                            <div class="mall-card__placeholder">NO IMAGE</div>
+                        {% endif %}
+                    </div>
+
+                </a>
+            </article>
+        {% empty %}
+            <p>No active products found in this category.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

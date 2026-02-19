@@ -1,0 +1,30 @@
+/* ===== 전체 레이아웃 ===== */
+
+.layout-wrapper {
+    width: 100%;
+    background: #f6f8fb;
+    padding: 50px 0 80px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    width: 1200px;
+    margin: 40px auto;
+}
+
+
+/* ===== 사이드바 ===== */
+
+.sidebar {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+/* ===== 메인 ===== */
+
+.content {
+    min-height: 700px;
+}

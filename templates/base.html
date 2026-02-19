@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{% block title %}BOOKSMAKERS{% endblock %}</title>
+
+    <!-- 전역 -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+
+    <!-- 레이아웃 -->
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+
+    <!-- 공통 파셜 -->
+    <link rel="stylesheet" href="{% static 'css/partials/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/partials/sidebar.css' %}">
+
+    <!-- 컴포넌트 -->
+    <link rel="stylesheet" href="{% static 'css/components/card.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/search.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+{% include "partials/header.html" %}
+
+<div class="layout-wrapper">
+    <div class="layout">
+        <aside class="sidebar">
+            {% include "partials/nav_category.html" %}
+        </aside>
+
+        <main class="content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+{% include "partials/footer.html" %}
+
+</body>
+</html>

@@ -2,45 +2,93 @@
 
 <header class="header">
 
-  <!-- 1. 상단바 -->
-  <div class="topbar">
-    <div class="container">
-      <div class="left">고객센터</div>
-      <div class="right">
-        로그인 회원가입 마이페이지 장바구니
-      </div>
+    <!-- 1. 상단바 -->
+    <div class="topbar">
+        <div class="container">
+
+            <div class="left">
+                <a href="{% url 'catalog:home' %}">홈</a>
+            </div>
+
+            <div class="right">
+                <a href="{% url 'accounts:login' %}">로그인</a>
+                <a href="{% url 'accounts:signup' %}">회원가입</a>
+                <a href="{% url 'accounts:mypage' %}">마이페이지</a>
+                <a href="{% url 'accounts:order_history' %}">주문조회</a>
+                <a href="{% url 'accounts:support' %}">고객센터</a>
+                <a href="{% url 'cart:cart_view' %}">장바구니</a>
+            </div>
+
+        </div>
     </div>
-  </div>
 
-  <!-- 2. 로고 + 검색 + 장바구니 -->
-  <div class="header-main">
-    <div class="container">
+    <!-- 2. 로고 + 검색 + 장바구니 -->
+    <div class="header-main">
+        <div class="container">
 
-      <div class="logo">
-        <img src="{% static 'img/booksmakers_logo03.png' %}" alt="logo">
-      </div>
+            <div class="logo">
+                <a href="{% url 'catalog:home' %}">
+                    <img src="{% static 'img/booksmakers_logo03.png' %}" alt="logo">
+                </a>
+            </div>
 
-      <div class="search">
-        <input type="text" placeholder="부품 · 키트 · 교육 검색">
-        <button>검색</button>
-      </div>
 
-      <div class="cart">
-        🛒 장바구니 (0)
-      </div>
+            <div class="search">
+                <form method="get" action="{% url 'catalog:home' %}">
+                    <input type="text"
+                           name="q"
+                           placeholder="부품 · 키트 · 교육 검색"
+                           value="{{ request.GET.q }}">
+                    <button type="submit">검색</button>
+                </form>
+            </div>
+
+
+            <div class="cart">
+                <a href="{% url 'cart:cart_view' %}">
+                    장바구니 (
+                    {% if request.session.cart %}
+                        {{ request.session.cart|length }}
+                    {% else %}
+                        0
+                    {% endif %}
+                    )
+                </a>
+            </div>
+
+
+        </div>
 
     </div>
-  </div>
 
-  <!-- 3. 카테고리 바 -->
-  <div class="category-bar">
-    <div class="container">
-      <button>☰ 전체 카테고리</button>
-      <span>아두이노</span>
-      <span>라즈베리파이</span>
-      <span>전자부품</span>
-      <span>교육키트</span>
+    <!-- 3. 카테고리 바 -->
+    <div class="category-bar">
+
+        <div class="container">
+
+            <a href="{% url 'catalog:home' %}" class="category-all">
+                ☰ 전체 카테고리
+            </a>
+
+            {% for category in categories %}
+                <a href="{% url 'catalog:category' category.slug %}"
+                   class="category-item">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+
+            <a href="#" class="category-item">카메라/센서</a>
+            <a href="#" class="category-item">전자부품</a>
+            <a href="#" class="category-item">전기부품</a>
+            <a href="#" class="category-item">공압부품</a>
+            <a href="#" class="category-item">전원/베터리</a>
+            <a href="#" class="category-item">로봇/기계/RC</a>
+            <a href="#" class="category-item">계측기/측정기</a>
+            <a href="#" class="category-item">수공구/전동공구</a>
+            <a href="#" class="category-item">책/서적/교육</a>
+
+        </div>
     </div>
-  </div>
+
 
 </header>

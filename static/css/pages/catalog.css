@@ -1,0 +1,13 @@
+.mall-hero {
+    margin-bottom: 40px;
+}
+
+.mall-hero h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.mall-hero p {
+    color: #6b7280;
+}

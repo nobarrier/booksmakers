@@ -1,69 +1,25 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
+/* =========================================
+   BOOKSMAKERS MAIN STYLESHEET
+   ========================================= */
 
-.header {
-  background: #2e627a;
-  color: white;
-}
+/* 1️⃣ Base (가장 먼저 로딩) */
+@import url("base.css");
+@import url("layout.css");
 
-.container {
-  width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-}
+/* 2️⃣ Partials (공통 레이아웃 조각) */
+@import url("partials/header.css");
+@import url("partials/sidebar.css");
 
-/* 상단바 */
-.topbar {
-  padding: 6px 0;
-}
+/* 3️⃣ Components (재사용 UI 요소) */
+@import url("components/button.css");
+@import url("components/badge.css");
+@import url("components/form.css");
+@import url("components/card.css");
+@import url("components/category.css");
+@import url("components/logo.css");
+@import url("components/search.css");
 
-.topbar .container {
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-/* 메인 */
-.header-main {
-  padding: 15px 0;
-}
-
-.header-main .container {
-  justify-content: space-between;
-}
-
-.logo img {
-  height: 45px;
-}
-
-.search {
-  flex: 1;
-  display: flex;
-  margin: 0 40px;
-  max-width: 600px;
-}
-
-.search input {
-  flex: 1;
-  padding: 10px;
-}
-
-.search button {
-  padding: 10px 20px;
-}
-
-.cart {
-  white-space: nowrap;
-}
-
-/* 카테고리 */
-.category-bar {
-  border-top: 1px solid rgba(255,255,255,0.2);
-  padding: 10px 0;
-}
-
-.category-bar .container {
-  gap: 25px;
-}
+/* 4️⃣ Pages (페이지 전용 스타일) */
+@import url("pages/catalog.css");
+@import url("pages/cart.css");
+@import url("pages/checkout.css");
