@@ -14,17 +14,28 @@
     margin: 40px auto;
 }
 
-
-/* ===== 사이드바 ===== */
-
-.sidebar {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-}
-
 /* ===== 메인 ===== */
 
 .content {
     min-height: 700px;
+}
+
+
+.breadcrumb {
+    letter-spacing: 0.3px;
+}
+
+
+.breadcrumb-bar {
+    font-size: 16px; /* 기존 13~14px에서 키움 */
+    font-weight: 500;
+}
+
+.breadcrumb a {
+    font-size: 16px;
+}
+
+.breadcrumb strong {
+    font-size: 17px;
+    font-weight: 700;
 }

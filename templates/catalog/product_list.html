@@ -1,48 +1,135 @@
 {% extends "base.html" %}
+{% load querystring %}
 
-{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
+{% block title %}
+    {% if category %}
+        {{ category.name }}
+    {% else %}
+        Products
+    {% endif %}
+{% endblock %}
 
 {% block content %}
+
+    {% if category %}
+
+        <!-- 🔹 Breadcrumb + Depth Select -->
+        <div class="breadcrumb-bar">
+        <a href="{% url 'catalog:home' %}">HOME</a>
+
+        {% for node in ancestors %}
+            <span>›</span>
+            <select onchange="location = this.value;">
+                {% for sibling in node.parent.children.all %}
+                    <option value="{% url 'catalog:category' sibling.slug %}"
+                            {% if sibling == node %}selected{% endif %}>
+                        {{ sibling.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        {% endfor %}
+
+        <span>›</span>
+        <strong>{{ category.name }}</strong>
+
+    {% endif %}
+
+
+    <!-- 🔹 Hero -->
     <section class="mall-hero">
-        <h1>{% if category %}{{ category.name }}{% else %}Electronics Store{% endif %}</h1>
+        <h1>
+            {% if category %}
+                {{ category.name }}
+            {% else %}
+                Electronics Store
+            {% endif %}
+        </h1>
         <p>Browse active products with fast category navigation.</p>
     </section>
 
+
+    <!-- 🔹 상품 영역 -->
     <div class="mall-grid">
 
         {% for product in products %}
-            {% if category %}
-                <h1>{{ category.name }}</h1>
-            {% else %}
-                <h1>전체 상품</h1>
-            {% endif %}
-
             <article class="mall-card">
-                <a class="mall-card__link" href="{% url 'catalog:detail' product.pk %}">
+                <a href="{% url 'catalog:detail' product.pk %}" class="mall-card__image-link">
                     <div class="mall-card__thumb">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                        {% else %}
-                            <div class="mall-card__placeholder">NO IMAGE</div>
-                        {% endif %}
+                        {% with product.images.all as image_list %}
+                            {% if image_list %}
+                                <img src="{{ image_list.0.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <div class="mall-card__placeholder">NO IMAGE</div>
+                            {% endif %}
+                        {% endwith %}
                     </div>
-                    <div class="mall-card__body">
-                        <p class="mall-card__category">{{ product.category.name }}</p>
-                        <h3 class="mall-card__title">{{ product.name }}</h3>
-                        <p class="mall-card__price">{{ product.price }} KRW</p>
-                    </div>
-                    <div class="mall-card__thumb">
-                        {% if product.thumbnail %}
-                            <img src="{{ product.thumbnail }}" alt="{{ product.name }}">
-                        {% else %}
-                            <div class="mall-card__placeholder">NO IMAGE</div>
-                        {% endif %}
-                    </div>
-
                 </a>
+
+                <div class="mall-card__body">
+                    <p class="mall-card__category">{{ product.category.name }}</p>
+                    <h3 class="mall-card__title">
+                        <a href="{% url 'catalog:detail' product.pk %}">{{ product.name }}</a>
+                    </h3>
+                    <p class="mall-card__price">{{ product.price }} KRW</p>
+                </div>
             </article>
+
         {% empty %}
             <p>No active products found in this category.</p>
         {% endfor %}
+
     </div>
+
+    {% if products.has_other_pages %}
+        <div class="pagination">
+
+            {% if products.has_previous %}
+                <a href="?{% query_transform page=products.previous_page_number %}">«</a>
+            {% endif %}
+
+            {% with total=products.paginator.num_pages current=products.number %}
+
+                {% if current == 1 %}
+                    <span class="current">1</span>
+                {% else %}
+                    <a href="?{% query_transform page=1 %}">1</a>
+                {% endif %}
+
+                {% if current > 4 %}
+                    <span class="dots">…</span>
+                {% endif %}
+
+                {% for num in products.paginator.page_range %}
+                    {% if num > 1 and num < total %}
+                        {% if num >= current|add:"-2" and num <= current|add:"2" %}
+                            {% if num == current %}
+                                <span class="current">{{ num }}</span>
+                            {% else %}
+                                <a href="?{% query_transform page=num %}">{{ num }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if current < total|add:"-3" %}
+                    <span class="dots">…</span>
+                {% endif %}
+
+                {% if total > 1 %}
+                    {% if current == total %}
+                        <span class="current">{{ total }}</span>
+                    {% else %}
+                        <a href="?{% query_transform page=total %}">{{ total }}</a>
+                    {% endif %}
+                {% endif %}
+
+            {% endwith %}
+
+            {% if products.has_next %}
+                <a href="?{% query_transform page=products.next_page_number %}">»</a>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
 {% endblock %}

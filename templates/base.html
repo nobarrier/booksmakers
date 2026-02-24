@@ -9,13 +9,10 @@
     <!-- 전역 -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
-
-    <!-- 레이아웃 -->
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
 
-    <!-- 공통 파셜 -->
+    <!-- 공통 -->
     <link rel="stylesheet" href="{% static 'css/partials/header.css' %}">
-    <link rel="stylesheet" href="{% static 'css/partials/sidebar.css' %}">
 
     <!-- 컴포넌트 -->
     <link rel="stylesheet" href="{% static 'css/components/card.css' %}">
@@ -30,17 +27,37 @@
 
 <div class="layout-wrapper">
     <div class="layout">
+
+        <!-- 🔥 사이드바는 여기 한 번만 -->
         <aside class="sidebar">
-            {% include "partials/nav_category.html" %}
+            <ul class="sidebar-menu">
+                {% for category in categories %}
+                    <li>
+                        <a href="{% url 'catalog:category' category.slug %}">
+                            {{ category.name }}
+                        </a>
+
+                        {% if category.children.all %}
+                            <ul>
+                                {% include "partials/nav_recursive.html" with children=category.children.all %}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
         </aside>
 
+        <!-- 🔥 콘텐츠는 여기 한 번만 -->
         <main class="content">
             {% block content %}{% endblock %}
         </main>
+
     </div>
 </div>
 
 {% include "partials/footer.html" %}
+
+<script src="{% static 'js/menu.js' %}"></script>
 
 </body>
 </html>

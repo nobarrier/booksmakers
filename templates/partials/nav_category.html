@@ -1,23 +1,30 @@
-<div class="category-menu">
-    <h3>☰ 전체 카테고리</h3>
+{% for category in categories %}
+    <li class="menu-item">
+        <a href="{% url 'catalog:category' category.slug %}">
+            {{ category.name }}
+        </a>
 
-    {% for cat in categories %}
-        <div class="category-item">
-            <a href="{% url 'catalog:category' cat.slug %}"
-               class="{% if category and category.slug == cat.slug %}active{% endif %}">
-                {{ cat.name }}
-            </a>
-
-            {% if cat.children.all %}
-                <div class="subcategory">
-                    {% for child in cat.children.all %}
-                        <a href="{% url 'catalog:category' child.slug %}"
-                           class="{% if category and category.slug == child.slug %}active{% endif %}">
-                            └ {{ child.name }}
+        {% if category.children.exists %}
+            <div class="top-dropdown">
+                {% for child in category.children.all %}
+                    <div class="mega-column">
+                        <a class="level2"
+                           href="{% url 'catalog:category' child.slug %}">
+                            {{ child.name }}
                         </a>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        </div>
-    {% endfor %}
-</div>
+
+                        {% if child.children.exists %}
+                            <div class="level3-group">
+                                {% for sub in child.children.all %}
+                                    <a href="{% url 'catalog:category' sub.slug %}">
+                                        {{ sub.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </li>
+{% endfor %}

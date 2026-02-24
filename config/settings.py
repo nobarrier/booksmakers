@@ -1,14 +1,21 @@
 """
 Django settings for config project.
+Production-ready basic configuration
 """
 
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ========================
 # SECURITY
-SECRET_KEY = "django-insecure-4+zr+$+gn@kfc5^g$izmf#m2t4hnsxmg-kwg%*qcqef7g^em(("
-DEBUG = True
+# ========================
+
+# 🔐 환경변수에서 SECRET_KEY 읽기
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "booksmakers.com",
@@ -18,7 +25,15 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+# HTTPS 사용 시 활성화 가능
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+# ========================
 # APPLICATIONS
+# ========================
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -33,6 +48,10 @@ INSTALLED_APPS = [
     "accounts",
 ]
 
+# ========================
+# MIDDLEWARE
+# ========================
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -44,6 +63,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+
+# ========================
+# TEMPLATES
+# ========================
 
 TEMPLATES = [
     {
@@ -65,7 +88,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+# ========================
 # DATABASE
+# ========================
+
+# ⚠️ 현재는 SQLite (베타용)
+# 실운영 시 PostgreSQL 권장
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -73,7 +101,10 @@ DATABASES = {
     }
 }
 
+# ========================
 # PASSWORD VALIDATION
+# ========================
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -83,21 +114,33 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# ========================
 # INTERNATIONALIZATION
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+# ========================
+
+LANGUAGE_CODE = "ko-kr"
+TIME_ZONE = "Asia/Seoul"
+
 USE_I18N = True
 USE_TZ = True
 
+# ========================
 # STATIC FILES
+# ========================
+
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+# ========================
+# MEDIA FILES
+# ========================
 
 MEDIA_URL = "/media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
