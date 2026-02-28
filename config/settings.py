@@ -1,6 +1,6 @@
 """
 Django settings for config project.
-Production-ready basic configuration
+Production-ready configuration (Dev + Prod compatible)
 """
 
 from pathlib import Path
@@ -12,23 +12,50 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ========================
 
-# 🔐 환경변수에서 SECRET_KEY 읽기
+# DEBUG 환경변수 기반 (기본값 False)
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+
+# SECRET_KEY 처리
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
-DEBUG = False
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "dev-secret-key"
+    else:
+        raise RuntimeError("DJANGO_SECRET_KEY environment variable is not set")
 
 ALLOWED_HOSTS = [
     "booksmakers.com",
     "www.booksmakers.com",
+    "54.116.91.126",
     "43.201.76.182",
     "127.0.0.1",
     "localhost",
 ]
 
-# HTTPS 사용 시 활성화 가능
+# HTTPS behind Nginx
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# 보안 헤더
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
+
+# HTTPS 강제 리다이렉트 (운영에서만 적용)
+SECURE_SSL_REDIRECT = not DEBUG
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "http://booksmakers.com",
+    "http://www.booksmakers.com",
+    "https://booksmakers.com",
+    "https://www.booksmakers.com",
+]
+
+# 쿠키 보안 (운영에서만 True)
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 # ========================
 # APPLICATIONS
@@ -42,7 +69,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "apps.cart",
-    "apps.orders",
+    "apps.orders.apps.OrdersConfig",
     "apps.catalog",
     "users",
     "accounts",
@@ -92,12 +119,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # ========================
 
-# ⚠️ 현재는 SQLite (베타용)
-# 실운영 시 PostgreSQL 권장
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "booksmakers_dev",
+        "USER": "booksmakers_user",
+        "PASSWORD": "devpassword",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
@@ -120,25 +149,16 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "ko-kr"
 TIME_ZONE = "Asia/Seoul"
-
 USE_I18N = True
 USE_TZ = True
 
 # ========================
-# STATIC FILES
+# STATIC / MEDIA
 # ========================
 
 STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# ========================
-# MEDIA FILES
-# ========================
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

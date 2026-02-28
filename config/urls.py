@@ -8,13 +8,11 @@ urlpatterns = [
     path("", lambda request: redirect("catalog/")),
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("users/", include("users.urls")),
+    path("accounts/custom/", include("accounts.urls")),
     path("catalog/", include("apps.catalog.urls")),
     path("cart/", include("apps.cart.urls")),
     path("order/", include("apps.orders.urls")),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("", include("users.urls")),
-    path("", include("accounts.urls")),
-    path("users/", include("users.urls")),
 ]
 
 if settings.DEBUG:
