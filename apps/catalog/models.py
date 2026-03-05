@@ -7,7 +7,7 @@ from django.db.models import Sum
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, allow_unicode=True)
+    slug = models.SlugField(allow_unicode=True)
 
     sort_order = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
@@ -21,12 +21,30 @@ class Category(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        unique_together = ("parent", "slug")
+
     def save(self, *args, **kwargs):
         self.clean()
 
         if not self.slug:
             base_slug = slugify(self.name, allow_unicode=True)
-            self.slug = f"{self.parent.slug}-{base_slug}" if self.parent else base_slug
+
+            if self.parent:
+                base_slug = f"{self.parent.slug}-{base_slug}"
+
+            slug_candidate = base_slug
+            counter = 2
+
+            while (
+                Category.objects.filter(slug=slug_candidate)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                slug_candidate = f"{base_slug}-{counter}"
+                counter += 1
+
+            self.slug = slug_candidate
 
         super().save(*args, **kwargs)
 
@@ -70,10 +88,43 @@ def product_image_path(instance, filename):
     return f"product_images/{category_code}/{serial}/{filename}"
 
 
+class Mall(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Product(models.Model):
     product_code = models.CharField(max_length=50, blank=True)
-    serial_number = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(unique=True, allow_unicode=True)
+
+    # 🔥 외부 API 연동용 ID
+    external_id = models.CharField(
+        max_length=120,
+        unique=True,
+        null=True,
+        blank=True,
+        db_index=True,
+    )
+
+    # 🔥 공급처 정보
+    source_supplier = models.CharField(max_length=50, blank=True, db_index=True)
+
+    source_category_path = models.JSONField(blank=True, null=True)
+
+    # 🔥 가격비교 핵심 키
+    manufacturer = models.CharField(max_length=200, blank=True, db_index=True)
+
+    mpn = models.CharField(max_length=200, blank=True, db_index=True)
+
+    # 🔥 supplier part number
+    serial_number = models.CharField(max_length=120, unique=True)
+
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True)
+
+    mall = models.ForeignKey("Mall", null=True, blank=True, on_delete=models.SET_NULL)
 
     category = models.ForeignKey(
         Category,
@@ -81,21 +132,28 @@ class Product(models.Model):
         on_delete=models.PROTECT,
     )
 
-    name = models.CharField(max_length=300)
-    brand = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=300, db_index=True)
 
-    price = models.IntegerField()
+    brand = models.CharField(max_length=120, blank=True, db_index=True)
+
+    price = models.IntegerField(db_index=True)
+
     sale_price = models.IntegerField(blank=True, null=True)
 
     short_description = models.CharField(max_length=500, blank=True)
+
     detail_html = models.TextField(blank=True)
 
     source_url = models.URLField(blank=True)
 
+    image_url = models.URLField(blank=True)
+
     is_active = models.BooleanField(default=True)
+
     is_reviewed = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -103,10 +161,29 @@ class Product(models.Model):
             models.Index(fields=["slug"]),
             models.Index(fields=["category"]),
             models.Index(fields=["price"]),
+            models.Index(fields=["external_id"]),
+            models.Index(fields=["manufacturer", "mpn"]),  # 🔥 MPN 통합 핵심
         ]
 
     def __str__(self):
         return self.name
+
+    @property
+    def lowest_price(self):
+        prices = self.supplier_products.values_list("price", flat=True)
+
+        if prices:
+            return min(prices)
+
+        return None
+
+    canonical = models.ForeignKey(
+        "CanonicalProduct",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="products",
+    )
 
 
 class ProductImage(models.Model):
@@ -212,3 +289,79 @@ class Inventory(models.Model):
                 name="uniq_inventory_warehouse_variant",
             )
         ]
+
+
+class CategoryRule(models.Model):
+    LEVEL_CHOICES = (
+        (1, "1차"),
+        (2, "2차"),
+        (3, "3차"),
+    )
+
+    keyword = models.CharField(max_length=100)
+    category_name = models.CharField(max_length=100)
+    level = models.IntegerField(choices=LEVEL_CHOICES)
+
+    priority = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.keyword} → {self.category_name} ({self.level})"
+
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50, unique=True)
+    website = models.URLField(blank=True)
+
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
+class SupplierProduct(models.Model):
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="supplier_products"
+    )
+
+    supplier_part_number = models.CharField(max_length=200)
+
+    price = models.FloatField()
+    stock = models.IntegerField(default=0)
+
+    url = models.URLField()
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("supplier", "supplier_part_number")
+
+        indexes = [
+            models.Index(fields=["product"]),
+            models.Index(fields=["price"]),
+            models.Index(fields=["supplier"]),
+        ]
+
+
+class CanonicalProduct(models.Model):
+    manufacturer = models.CharField(max_length=200, db_index=True)
+
+    mpn = models.CharField(max_length=200, db_index=True)
+
+    name = models.CharField(max_length=300)
+
+    category = models.ForeignKey(
+        Category, on_delete=models.PROTECT, null=True, blank=True
+    )
+
+    image_url = models.URLField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("manufacturer", "mpn")
+
+    def __str__(self):
+        return f"{self.manufacturer} {self.mpn}"
