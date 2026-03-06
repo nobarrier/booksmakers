@@ -36,6 +36,9 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+
 # HTTPS behind Nginx
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -46,7 +49,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 
 # HTTPS 강제 리다이렉트 (운영에서만 적용)
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = False
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = [
@@ -125,13 +128,22 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "booksmakers_dev",
-        "USER": "booksmakers_user",
-        "PASSWORD": "devpassword",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME", "booksmakers"),
+        "USER": os.getenv("DB_USER", "books"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "books1234"),
+        "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
+
+# ========================
+# DIGIKEY API
+# ========================
+
+DIGIKEY_CLIENT_ID = os.getenv("DIGIKEY_CLIENT_ID")
+DIGIKEY_CLIENT_SECRET = os.getenv("DIGIKEY_CLIENT_SECRET")
+DIGIKEY_ENV = os.getenv("DIGIKEY_ENV", "production")
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 # ========================
 # PASSWORD VALIDATION
